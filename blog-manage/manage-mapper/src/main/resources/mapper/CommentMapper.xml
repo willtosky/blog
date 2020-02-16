@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.crybird.manage.mapper.CommentMapper">
+    <sql id="cols">
+        id,article_id,
+        user_id,nickname,email,
+        avatar,create_time,
+        content,status,
+        replay,like
+    </sql>
+    <select id="getById" parameterType="java.lang.Long" resultType="cn.crybird.manage.model.Comment">
+        select
+        <include refid="cols"></include>
+        from t_comment
+        where id = #{id}
+    </select>
+    <select id="getList" resultType="cn.crybird.manage.model.Comment">
+        select
+        <include refid="cols"/>
+        from t_comment
+        <where>
+            <if test="articleId != null">
+                article_id = #{articleId,jdbcType=BIGINT}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <resultMap id="crMap" type="cn.crybird.manage.model.CommentAndReplay">
+        <id property="id" column="id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="email" column="email"/>
+        <result property="avatar" column="avatar"/>
+        <result property="createTime" column="create_time"/>
+        <result property="content" column="content"/>
+        <result property="status" column="status"/>
+        <result property="replay" column="replay"/>
+        <result property="like" column="like"/>
+        <collection property="replaies" ofType="cn.crybird.manage.model.CommentReplay">
+            <id property="id" column="r_id"/>
+            <result property="commentId" column="r_comment_id"/>
+            <result property="userId" column="r_user_id"/>
+            <result property="nickname" column="r_nickname"/>
+            <result property="email" column="r_email"/>
+            <result property="avatar" column="r_avatar"/>
+            <result property="createTime" column="r_create_time"/>
+            <result property="content" column="r_content"/>
+            <result property="status" column="r_status"/>
+            <result property="linkId" column="r_link_id"/>
+            <result property="linkName" column="r_link_name"/>
+            <result property="linkEmail" column="r_link_email"/>
+            <result property="like" column="r_like"/>
+        </collection>
+    </resultMap>
+    <select id="getCommentAndReplayListByArticleId" parameterType="java.lang.Long" resultMap="crMap">
+        select
+        c.id,
+        c.article_id,
+        c.user_id,
+        c.nickname,
+        c.email,
+        c.avatar,
+        c.create_time,
+        c.content,
+        c.status,
+        c.replay,
+        c.like,
+        r.id r_id,
+        r.comment_id r_comment_id,
+        r.user_id r_user_id,
+        r.nickname r_nickname,
+        r.email r_email,
+        r.avatar r_avatar,
+        r.create_time r_create_time,
+        r.content r_content,
+        r.status r_status,
+        r.link_id r_link_id,
+        r.link_name r_link_name,
+        r.link_email r_link_email,
+        r.like r_like
+        from t_comment c
+        left outer join t_comment_replay r
+        on c.id = r.comment_id
+        where c.article_id = #{articleId,jdbcType=BIGINT}
+        order by c.create_time desc,r.create_time desc
+    </select>
+    <select id="countById" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(1) from t_comment
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <update id="updateByComment" parameterType="cn.crybird.manage.model.Comment">
+
+    </update>
+    <update id="updateStatusById" parameterType="java.util.HashMap">
+
+    </update>
+    <insert id="createByComment" parameterType="cn.crybird.manage.model.Comment" useGeneratedKeys="true"
+            keyProperty="id" keyColumn="id">
+        insert into t_comment(article_id,user_id,
+        nickname,avatar,
+        content)
+        values(#{comment.articleId,jdbcType=BIGINT},#{comment.userId,jdbcType=BIGINT},
+        #{comment.nickname,jdbcType=VARCHAR},#{comment.avatar,jdbcType=VARCHAR},
+        #{comment.content,jdbcType=VARCHAR})
+    </insert>
+    <delete id="removeById" parameterType="java.lang.Long">
+        delete from t_comment
+        where article_id = #{articleId,jdbcType=BIGINT}
+    </delete>
+    <update id="updateStatusByArticleId">
+        update t_comment
+        set status = #{status,jdbcType=INTEGER}
+        where article_id = #{articleId,jdbcType=BIGINT}
+    </update>
+    <update id="incReplay" parameterType="java.lang.Long">
+        update t_comment
+        set replay = replay + 1
+        where comment_id = #{commentId,jdbcType=BIGINT}
+    </update>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.crybird.manage.mapper.ArticleTagMapper">
+    <insert id="createByArticleIdAndTagIds">
+        insert into t_article_tag(article_id,tag_id)
+        values
+        <foreach collection="tagIds" item="tagId" separator=",">
+            (#{articleId,jdbcType=BIGINT},#{tagId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+    <delete id="removeByArticleId" parameterType="java.lang.Long">
+        delete from t_article_tag
+        where article_id = #{articleId,jdbcType=BIGINT}
+    </delete>
+    <delete id="removeByTagId" parameterType="java.lang.Long">
+        delete from t_article_tag
+        where tag_id = #{tagId,jdbcType=BIGINT}
+    </delete>
+    <delete id="removeByArticleIdAndTagId">
+        delete from t_article_tag
+        where article_id = #{articleId,jdbcType=BIGINT}
+        and tag_id = #{tagId,jdbcType=BIGINT}
+    </delete>
+</mapper>

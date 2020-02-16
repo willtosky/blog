@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.crybird.manage.mapper.UserMapper">
+    <sql id="cols">
+        id,username,
+        email,phone,
+        password,nickname,
+        sex,birthday,
+        status,update_count,
+        role_name
+    </sql>
+    <select id="getById" parameterType="java.lang.Long" resultType="cn.crybird.manage.model.User">
+        select
+        <include refid="cols"/>
+        from t_user where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="getByUserName" parameterType="java.lang.String" resultType="cn.crybird.manage.model.User">
+        select
+        <include refid="cols"/>
+        from t_user where username = #{username,jdbcType=VARCHAR}
+    </select>
+    <select id="getByEmail" parameterType="java.lang.String" resultType="cn.crybird.manage.model.User">
+        select
+        <include refid="cols"/>
+        from t_user where email = #{email,jdbcType=VARCHAR}
+    </select>
+    <select id="getByPhone" parameterType="java.lang.String" resultType="cn.crybird.manage.model.User">
+        select
+        <include refid="cols"/>
+        from t_user where phone = #{phone,jdbcType=VARCHAR}
+    </select>
+    <insert id="createUser" parameterType="cn.crybird.manage.model.User" useGeneratedKeys="true"  keyColumn="id" keyProperty="id">
+        insert into t_user(username,email,phone,password,nickname,role_name)
+        values(#{user.username},#{user.email},#{user.phone},#{user.password},#{user.nickname},'USER')
+    </insert>
+    <update id="updateUser" parameterType="cn.crybird.manage.model.User">
+        update t_user
+        <set>
+            <if test="user.username != null and user.username != ''">
+                username = #{user.username},
+            </if>
+            <if test="user.email != null and user.email != ''">
+                email = #{user.email},
+            </if>
+            <if test="user.phone != null and user.phone != ''">
+                phone = #{user.phone},
+            </if>
+            <if test="user.password != null and user.password != ''">
+                password = #{user.password},
+            </if>
+            <if test="user.nickname != null and user.nickname != ''">
+                nickname = #{user.nickname},
+            </if>
+            <if test="user.sex != null and user.sex != ''">
+                sex = #{user.sex},
+            </if>
+            <if test="user.birthday != null and user.birthday != ''">
+                birthday = #{user.birthday},
+            </if>
+            update_count = update_count + 1
+        </set>
+        where id = #{user.id}
+    </update>
+    <update id="updateUserStatus" parameterType="java.util.Map">
+        update t_user
+        set status = #{map.status}
+        where id = #{map.id}
+    </update>
+    <delete id="removeUser" parameterType="java.lang.Long">
+        delete from t_user
+        where id = #{id}
+    </delete>
+</mapper>

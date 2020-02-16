@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.crybird.manage.mapper.RoleMapper">
+    <select id="getById" parameterType="java.lang.Long" resultType="cn.crybird.manage.model.Role">
+
+    </select>
+    <select id="getList" resultType="cn.crybird.manage.model.Role">
+
+    </select>
+    <update id="updateByRole" parameterType="cn.crybird.manage.model.Role">
+
+    </update>
+    <insert id="createByRole" parameterType="cn.crybird.manage.model.Role" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+
+    </insert>
+    <delete id="removeById" parameterType="java.lang.Long">
+
+    </delete>
+
+</mapper>

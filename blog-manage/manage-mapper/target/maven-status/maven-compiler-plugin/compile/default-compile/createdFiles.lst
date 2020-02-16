@@ -1,0 +1,9 @@
+cn\crybird\manage\mapper\CommentMapper.class
+cn\crybird\manage\mapper\UserMapper.class
+cn\crybird\manage\mapper\ArticleMapper.class
+cn\crybird\manage\mapper\BaseMapper.class
+cn\crybird\manage\mapper\CommentReplayMapper.class
+cn\crybird\manage\mapper\TagMapper.class
+cn\crybird\manage\mapper\ArticleTagMapper.class
+cn\crybird\manage\mapper\TypeMapper.class
+cn\crybird\manage\mapper\RoleMapper.class

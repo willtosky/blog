@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.crybird.manage.mapper.ArticleMapper">
+    <sql id="cols">
+        id,user_id,
+        mark,type_id,
+        type,tag_ids,
+        tags,title,
+        summary,image_path,
+        md_path,recommend_flag,
+        comment_flag,praise_flag,
+        reproduced_flag,browse_count,
+        alms,status,
+        create_time,edited_time,
+        publish_time
+    </sql>
+    <select id="getById" parameterType="java.lang.Long" resultType="cn.crybird.manage.model.Article">
+        select
+        <include refid="cols"/>
+        from t_article
+        where id = #{id}
+    </select>
+    <select id="getList" resultType="cn.crybird.manage.model.Article">
+        select
+        <include refid="cols"/>
+        from t_article
+        <where>
+            <if test="article.title != null and article.title != ''">
+                a.title like concat('%',concat(#{article.title,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="article.status != null">
+                and status = #{article.status,jdbcType=INTEGER}
+            </if>
+            <if test="article.typeId != null">
+                and type_id = #{article.typeId,jdbcType=INTEGER}
+            </if>
+            <if test="article.recommendFlag == 1">
+                and recommend_flag = #{article.recommendFlag,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="getListForShow" resultType="cn.crybird.manage.model.Article">
+        select
+        a.id,a.user_id,
+        a.mark,a.type_id,
+        a.type,a.tag_ids,
+        a.tags,a.title,
+        a.summary,a.image_path,
+        a.md_path,a.recommend_flag,
+        a.comment_flag,a.praise_flag,
+        a.reproduced_flag,a.browse_count,
+        a.alms,a.status,
+        a.create_time,a.edited_time,
+        a.publish_time
+        from t_article a
+        <if test="article.tagIds != null and article.tagIds != ''">
+            inner join t_article_tag a_t
+            on a.id = a_t.article_id
+            and a_t.tag_id = #{article.tagIds,jdbcType=VARCHAR}
+        </if>
+        <where>
+            <if test="article.status != null">
+                and a.status = #{article.status,jdbcType=INTEGER}
+            </if>
+            <if test="article.typeId != null">
+                and a.type_id = #{article.typeId,jdbcType=INTEGER}
+            </if>
+            <if test="article.recommendFlag == 1">
+                and a.recommend_flag = #{article.recommendFlag,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by a.publish_time desc
+    </select>
+    <select id="getTopNWithRecommend" resultType="cn.crybird.manage.model.Article">
+        select
+        <include refid="cols"/>
+        from t_article
+        where status = 1
+        and recommend_flag = 1
+        order by publish_time desc
+        limit #{topN}
+    </select>
+    <select id="count" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from t_article
+        where title = #{title,jdbcType=VARCHAR}
+    </select>
+    <select id="getArchives" resultType="cn.crybird.manage.model.Article">
+        select id,
+        title,
+        publish_time,
+        mark
+        from t_article
+        where status = 1
+        order by publish_time desc
+    </select>
+    <select id="countById" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(1) from t_article
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="getListByKey" parameterType="java.lang.String" resultType="cn.crybird.manage.model.Article">
+        select
+        <include refid="cols"/>
+        from t_article
+        where title like concat('%',concat(#{key,jdbcType=VARCHAR},'%'))
+        union
+        select
+        <include refid="cols"/>
+        from t_article
+        where type like concat('%',concat(#{key,jdbcType=VARCHAR},'%'))
+        union
+        select
+        <include refid="cols"/>
+        from t_article
+        where tags like concat('%',concat(#{key,jdbcType=VARCHAR},'%'))
+        union
+        select
+        <include refid="cols"/>
+        from t_article
+        where summary like concat('%',concat(#{key,jdbcType=VARCHAR},'%'))
+    </select>
+    <update id="updateByArticle" parameterType="cn.crybird.manage.model.Article">
+        update t_article
+        <set>
+            <if test="article.mark != null">
+                mark = #{article.mark,jdbcType=INTEGER},
+            </if>
+            <if test="article.typeId != null">
+                type_id = #{article.typeId,jdbcType=INTEGER},
+            </if>
+            <if test="article.type != null and article.type != ''">
+                type = #{article.type,jdbcType=VARCHAR},
+            </if>
+            <if test="article.title != null and article.title != ''">
+                title = #{article.title,jdbcType=VARCHAR},
+            </if>
+            <if test="article.summary != null and article.summary != ''">
+                summary = #{article.summary,jdbcType=VARCHAR},
+            </if>
+            <if test="article.imagePath != null and article.imagePath != ''">
+                image_path = #{article.imagePath,jdbcType=VARCHAR},
+            </if>
+            <if test="article.mdPath != null and article.mdPath != ''">
+                md_path = #{article.mdPath,jdbcType=VARCHAR},
+            </if>
+            <if test="article.recommendFlag != null">
+                recommend_flag = #{article.recommendFlag,jdbcType=INTEGER},
+            </if>
+            <if test="article.commentFlag != null">
+                comment_flag = #{article.commentFlag,jdbcType=INTEGER},
+            </if>
+            <if test="article.recommendFlag != null">
+                recommend_flag = #{article.recommendFlag,jdbcType=INTEGER},
+            </if>
+            <if test="article.praiseFlag != null">
+                praise_flag = #{article.praiseFlag,jdbcType=INTEGER},
+            </if>
+            <if test="article.reproducedFlag != null">
+                reproduced_flag = #{article.reproducedFlag,jdbcType=INTEGER},
+            </if>
+            <if test="article.editedTime != null">
+                edited_time = #{article.editedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="article.status != null">
+                status = #{article.status,jdbcType=INTEGER},
+            </if>
+            tag_ids = #{article.tagIds,jdbcType=VARCHAR},
+            tags = #{article.tags,jdbcType=VARCHAR},
+            update_count = update_count + 1
+        </set>
+        where id = #{article.id,jdbcType=BIGINT}
+    </update>
+    <update id="updateStatusById" parameterType="java.util.Map">
+        update t_article
+        set status = #{map.status,jdbcType=INTEGER}
+        where id = #{map.id,jdbcType=BIGINT}
+    </update>
+    <update id="incBrowseCount" parameterType="java.lang.Long">
+        update t_article
+        set browse_count = browse_count + 1
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <insert id="createByArticle" parameterType="cn.crybird.manage.model.Article" useGeneratedKeys="true"
+            keyProperty="id" keyColumn="id">
+        insert into t_article(mark,
+        type_id,type,
+        tag_ids,tags,
+        title,summary,
+        image_path,md_path,
+        recommend_flag,comment_flag,
+        praise_flag,reproduced_flag,
+        status,edited_time,
+        publish_time)
+        values(#{article.mark,jdbcType=INTEGER},
+        #{article.typeId,jdbcType=BIGINT},#{article.type,jdbcType=VARCHAR},
+        #{article.tagIds,jdbcType=VARCHAR},#{article.tags,jdbcType=VARCHAR},
+        #{article.title,jdbcType=VARCHAR},#{article.summary,jdbcType=VARCHAR},
+        #{article.imagePath,jdbcType=VARCHAR},#{article.mdPath,jdbcType=VARCHAR},
+        #{article.recommendFlag,jdbcType=INTEGER},#{article.commentFlag,jdbcType=INTEGER},
+        #{article.praiseFlag,jdbcType=INTEGER},#{article.reproducedFlag,jdbcType=INTEGER},
+        #{article.status,jdbcType=INTEGER},#{article.editedTime,jdbcType=TIMESTAMP},
+        #{article.publishTime,jdbcType=TIMESTAMP})
+    </insert>
+    <delete id="removeById" parameterType="java.lang.Long">
+        delete from t_article
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

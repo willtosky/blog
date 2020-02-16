@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<!--head-->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">博客</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" th:href="@{/css/me.css}">
+</head>
+<body>
+<!-- show -->
+
+<!--导航-->
+<div th:fragment="show_nav(index)">
+    <nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
+        <div class="ui container">
+            <div class="ui inverted secondary stackable menu">
+                <h2 class="ui teal header item">Blog</h2>
+                <a href="#" th:href="@{/home}" class="m-item item m-mobile-hide"
+                   th:classappend="${index} == 1 ? active"><i class="mini home icon"></i>首页</a>
+                <a href="#" th:href="@{/types}" class="m-item item m-mobile-hide"
+                   th:classappend="${index} == 2 ? active"><i class="mini idea icon"></i>分类</a>
+                <a href="#" th:href="@{/tags}" class="m-item item m-mobile-hide"
+                   th:classappend="${index} == 3 ? active"><i class="mini tags icon"></i>标签</a>
+                <a href="#" th:href="@{/archives}" class="m-item item m-mobile-hide"
+                   th:classappend="${index} == 4 ? active"><i class="mini clone icon"></i>归档</a>
+                <a href="#" th:href="@{/about}" class="m-item item m-mobile-hide"
+                   th:classappend="${index} == 5 ? active"><i class="mini info icon"></i>关于我</a>
+                <div class="right m-item item m-mobile-hide">
+                    <div class="ui icon inverted transparent input m-margin-tb-tiny">
+                        <form target="_blank" th:action="@{/search}" method="get">
+                            <input type="text" name="key" placeholder="Search....">
+                            <button class="submit m-btn-clear"><i class="search submit link icon"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="ui menu toggle black icon button m-right-top m-mobile-show">
+            <i class="sidebar icon"></i>
+        </a>
+    </nav>
+</div>
+<!--底部footer-->
+<div th:fragment="show_footer">
+    <footer class="ui inverted vertical segment m-padded-tb-massive">
+        <div class="ui center aligned container">
+            <div class="ui inverted divided stackable grid">
+                <div class="three wide column">
+                    <div class="ui inverted link list">
+                        <div class="item">
+                            <img th:src="@{/images/wechat.png}" class="ui rounded image" alt="" style="width: 110px">
+                        </div>
+                    </div>
+                </div>
+                <div class="three wide column">
+                    <h4 class="ui inverted header m-text-thin m-text-spaced ">最新博客</h4>
+                    <div id="topn">
+                        <div th:fragment="topn" class="ui inverted link list">
+                            <a th:each="article : ${topN}" th:href="@{/blog/{id}(id=${article.id})}"
+                               class="item m-text-thin"
+                               th:text="${article.title}">用户故事（User Story）</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="three wide column">
+                    <h4 class="ui inverted header m-text-thin m-text-spaced ">联系我</h4>
+                    <div class="ui inverted link list">
+                        <a href="#" class="item m-text-thin">Email：m15028669003@163.com</a>
+                        <a href="#" class="item m-text-thin">QQ：2282316199</a>
+                    </div>
+                </div>
+                <div class="seven wide column">
+                    <h4 class="ui inverted header m-text-thin m-text-spaced ">Blog</h4>
+                    <p class="m-text-thin m-text-spaced m-opacity-mini">
+                        这是我的个人博客、会分享关于编程、写作、思考相关的任何内容，希望可以给来到这儿的人有所帮助...</p>
+                </div>
+            </div>
+            <div class="ui inverted section divider"></div>
+            <p class="m-text-thin m-text-spaced m-opacity-tiny">Copyright © 2016 - 2017 Lirenmi Designed by Lirenmi</p>
+        </div>
+    </footer>
+</div>
+<!--script-->
+<th:block th:fragment="script">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script>
+
+        $.ajax({
+            url: "/top/3",
+            type: "get",
+            success: function (data) {
+                $("#topn").html(data);
+            }
+        });
+
+        function search() {
+            var key = $("[name='key']").val();
+            window.open(window.location.origin + "/search?key=" + key);
+        }
+    </script>
+</th:block>
+
+
+<!-- admin -->
+
+<!--导航-->
+<div th:fragment="admin_nav(index)">
+    <nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
+        <div class="ui container">
+            <div class="ui inverted secondary stackable menu">
+                <h2 class="ui teal header item">管理后台</h2>
+                <a th:classappend="${index == 1} ? active" href="#" th:href="@{/admin/index}"
+                   class="m-item item m-mobile-hide"><i class="mini home icon"></i>首页</a>
+                <a th:classappend="${index == 2} ? active" href="#" th:href="@{/admin/blogs}"
+                   class="m-item item m-mobile-hide"><i
+                        class="mini file text icon"></i>博客管理</a>
+                <a th:classappend="${index == 3} ? active" href="#" th:href="@{/admin/types}"
+                   class="m-item item m-mobile-hide"><i
+                        class="mini idea icon"></i>分类管理</a>
+                <a th:classappend="${index == 4} ? active" href="#" th:href="@{/admin/tags}"
+                   class="m-item item m-mobile-hide"><i
+                        class="mini tags icon"></i>标签管理</a>
+                <div class="right m-item m-mobile-hide menu">
+                    <div class="ui dropdown  item">
+                        <div class="text">
+                            <img class="ui avatar image" th:src="@{/favicon.ico}">
+                            HORN
+                        </div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <a href="#" th:href="@{/admin/logout}" class="item">注销</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="ui menu toggle black icon button m-right-top m-mobile-show">
+            <i class="sidebar icon"></i>
+        </a>
+    </nav>
+</div>
+
+
+</body>
+</html>

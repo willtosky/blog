@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="_fragment :: head(~{::title})">
+    <title>归档</title>
+</head>
+<body>
+<!--导航-->
+<div th:include="_fragment :: show_nav(4)"></div>
+<div class="center aligned">
+<!--中间内容-->
+<div id="main-content" class="m-container-small m-padded-tb-big">
+    <div class="ui container" th:object="${pageInfo}">
+        <!--header-->
+        <div class="ui top attached segment">
+            <div class="ui middle aligned two column grid">
+                <div class="column">
+                    <h3 class="ui teal header">搜索</h3>
+                </div>
+                <div class="right aligned column">
+                    共 <h2 class="ui orange header m-inline-block m-text-thin" th:text="*{total}">
+                    14 </h2> 个
+                </div>
+            </div>
+        </div>
+
+        <div class="ui top attached teal segment">
+            <div class="ui padded vertical segment m-padded-tb-large m-mobile-lr-clear"
+                 th:each="article : *{list}">
+                <div class="ui mobile reversed stackable grid">
+                    <div class="eleven wide column">
+                        <a th:href="@{/blog/{id}(id=${article.id})}" style="cursor: pointer;" class="ui header"
+                           th:text="${article.title}">你真的理解什么是财富自由吗？</a>
+                        <p class="m-text" th:text="${article.summary}">
+                            正确做好任何一件事情的前提是清晰、正确的理解目标。而事实是，我们很多人很多时候根本没有对目标正确的定义，甚至根本从来就没有想过，只是大家都那么做而已…...</p>
+                        <div class="ui grid">
+                            <div class="ten wide column">
+                                <div class="ui mini horizontal link list">
+                                    <div class="item">
+                                        <img th:src="@{/favicon.ico}" alt=""
+                                             class="ui avatar image">
+                                        <div class="content"><a href="#" th:href="@{/about}" class="header">HORN</a></div>
+                                    </div>
+                                    <div class="item">
+                                        <i class="calendar icon"></i><span
+                                            th:text="${#dates.format(article.publishTime,'yyyy-MM-dd hh:mm')}">2017-10-01</span>
+                                    </div>
+                                    <div class="item">
+                                        <i class="eye icon"></i><span
+                                            th:text="${article.browseCount}">2342</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="right aligned six wide column">
+                                <a href="#" th:href="@{/types/{id}(id=${article.typeId})}" target="_blank"
+                                   class="ui teal basic label m-padded-tiny m-text-thin"
+                                   th:text="${article.type}">认知升级</a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="five wide column" style="height: 10em;">
+                        <a href="#" target="_blank">
+                            <img style="width: 100% !important;height: 100% !important;" th:src="${article.imagePath}"
+                                 src="https://unsplash.it/800/450?image=1005"
+                                 alt=""
+                                 class="ui rounded image">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui bottom attached segment">
+            <div class="ui middle aligned two column grid">
+                <div class="column">
+                    <a th:href="*{hasPreviousPage} ? @{/search(page=*{pageNum-1},key=${key})} : 'javascript:;'"
+                       class="ui mini teal basic button" th:classappend="*{hasPreviousPage ? '' : 'disabled'}">上一页</a>
+                </div>
+                <div class="right aligned column">
+                    <a th:href="*{hasNextPage} ? @{/search(page=*{pageNum+1},key=${key})} : 'javascript:;'"
+                       class="ui mini teal basic button"
+                       th:classappend="*{hasNextPage ? '' : 'disabled'}">下一页</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+<br>
+<br>
+<!--底部footer-->
+<div id="footer" th:include="_fragment :: show_footer"></div>
+<th:block th:replace="_fragment :: script"></th:block>
+<script>
+    $('.menu.toggle').click(function () {
+        $('.m-item').toggleClass('m-mobile-hide');
+    });
+</script>
+</body>
+</html>

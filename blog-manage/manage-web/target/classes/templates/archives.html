@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="_fragment :: head(~{::title})">
+    <title>归档</title>
+</head>
+<body>
+<!--导航-->
+<div th:include="_fragment :: show_nav(4)"></div>
+<div class="center aligned">
+<!--中间内容-->
+<div id="main-content" class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+        <!--header-->
+        <div class="ui top attached padded segment">
+            <div class="ui middle aligned two column grid">
+                <div class="column">
+                    <h3 class="ui teal header">归档</h3>
+                </div>
+                <div class="right aligned column">
+                    共 <h2 class="ui orange header m-inline-block m-text-thin" th:text="${count}">
+                    114 </h2> 篇博客
+                </div>
+            </div>
+        </div>
+
+        <div th:each="year : ${years}" class="container m-margin-top">
+            <h3 class="ui center aligned header" th:text="${#dates.format(year.get(0).publishTime,'YYYY')}">2017</h3>
+            <div class="ui fluid vertical menu">
+                <a th:each="article : ${year}" href="#" th:href="@{/blog/{id}(id=${article.id})}" target="_blank" class="item">
+                <span>
+                    <i class="mini teal circle icon"></i>[[${article.title}]]
+                    <div class="ui teal basic left pointing label m-padded-mini " th:text="${#dates.format(article.publishTime,'MMMdd')}">9月03</div>
+                </span>
+                    <div class="ui orange basic left pointing label m-padded-mini ">
+                        <span th:if="${article.mark == 1}">原创</span>
+                        <span th:if="${article.mark == 2}">转载</span>
+                        <span th:if="${article.mark == 3}">翻译</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+<br>
+<br>
+<!--底部footer-->
+<div id="footer" th:include="_fragment :: show_footer"></div>
+<th:block th:replace="_fragment :: script"></th:block>
+<script>
+    $('.menu.toggle').click(function () {
+        $('.m-item').toggleClass('m-mobile-hide');
+    });
+</script>
+</body>
+</html>

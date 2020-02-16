@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.crybird.manage.mapper.TypeMapper">
+    <sql id="cols">
+        id,user_id,name
+    </sql>
+    <select id="getById" parameterType="java.lang.Long" resultType="cn.crybird.manage.model.Type">
+        select
+        <include refid="cols"></include>
+        from t_type
+        where id = #{id}
+    </select>
+    <select id="getList" resultType="cn.crybird.manage.model.Type">
+        select
+        <include refid="cols"/>
+        from t_type
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%',concat(#{name,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+        order by update_time desc
+    </select>
+    <select id="count" parameterType="cn.crybird.manage.model.Type" resultType="java.lang.Integer">
+        select count(1) from t_type
+        <where>
+            <if test="type.name != null">
+                name = #{type.name,jdbcType=VARCHAR}
+            </if>
+            <if test="type.id != null">
+                and id = #{type.id,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+    <select id="getTypes" resultType="cn.crybird.manage.model.Type">
+        select
+        <include refid="cols"/>
+        from t_type
+        order by name asc
+    </select>
+    <resultMap id="typeCount" type="cn.crybird.manage.model.TypeCount">
+        <id property="id" column="t_id"/>
+        <result property="count" column="count"/>
+        <association property="type"  javaType="cn.crybird.manage.model.Type">
+            <id property="id" column="t_id"/>
+            <result property="name" column="t_name"/>
+        </association>
+    </resultMap>
+    <select id="getTopN" parameterType="java.lang.Integer" resultMap="typeCount">
+        select count(a.id) count,t.id t_id,t.name t_name
+        from t_type t
+        left join t_article a
+        on t.id = a.type_id
+        group by t.id,t.name
+        order by count desc
+        limit #{topN}
+    </select>
+    <select id="getTypeCountList" resultMap="typeCount">
+        select count(a.id) count,t.id t_id,t.name t_name
+        from t_type t
+        left join t_article a
+        on t.id = a.type_id
+        group by t.id,t.name
+        order by t.name asc
+    </select>
+    <update id="updateByType" parameterType="cn.crybird.manage.model.Type">
+        update t_type
+        <set>
+            <if test="type.name != null">
+                name = #{type.name,jdbcType=VARCHAR},
+            </if>
+            update_count = update_count + 1
+        </set>
+        where id = #{type.id,jdbcType=BIGINT}
+    </update>
+    <insert id="createByType" parameterType="cn.crybird.manage.model.Type" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+        insert into t_type(user_id,name)
+        values(#{type.userId,jdbcType=BIGINT},#{type.name,jdbcType=VARCHAR})
+    </insert>
+    <delete id="removeById" parameterType="java.lang.Long">
+        delete from t_type
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+</mapper>

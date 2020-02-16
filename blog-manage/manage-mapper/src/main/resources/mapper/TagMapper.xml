@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.crybird.manage.mapper.TagMapper">
+    <sql id="cols">
+        id,user_id,name
+    </sql>
+    <select id="getById" parameterType="java.lang.Long" resultType="cn.crybird.manage.model.Tag">
+        select
+        <include refid="cols"></include>
+        from t_tag
+        where id = #{id}
+    </select>
+    <select id="getList" resultType="cn.crybird.manage.model.Tag">
+        select
+        <include refid="cols"/>
+        from t_tag
+        <where>
+            <if test="name != null and name != ''">
+                name like concat('%',concat(#{name,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+        order by name desc
+    </select>
+    <select id="getListByIds" parameterType="java.util.List" resultType="cn.crybird.manage.model.Tag">
+        select
+        <include refid="cols"/>
+        from t_tag
+        where id in <foreach collection="ids" separator="," item="id" open="(" close=")">#{id}</foreach>
+        order by id asc
+    </select>
+    <select id="count" parameterType="cn.crybird.manage.model.Tag" resultType="java.lang.Integer">
+        select count(1) from t_tag
+        <where>
+            <if test="tag.name != null">
+                name = #{tag.name,jdbcType=VARCHAR}
+            </if>
+            <if test="tag.id != null">
+                and id = #{tag.id,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+    <select id="getTags" resultType="cn.crybird.manage.model.Tag">
+        select
+        <include refid="cols"/>
+        from t_tag
+        order by name asc
+    </select>
+    <resultMap id="tagMap" type="cn.crybird.manage.model.TagCount">
+        <id property="id" column="t_id"/>
+        <result property="count" column="count"/>
+        <association property="tag" javaType="cn.crybird.manage.model.Tag">
+            <id property="id" column="t_id"/>
+            <result property="name" column="t_name"/>
+        </association>
+    </resultMap>
+    <select id="getTopN" resultMap="tagMap">
+        select count(a_t.id) count,t.id t_id,t.name t_name
+        from t_tag t
+        left join t_article_tag a_t
+        on a_t.tag_id = t.id
+        group by t.id,t.name
+        order by count desc
+        limit #{topN}
+    </select>
+    <select id="getTagCountList" resultMap="tagMap">
+        select count(a_t.id) count,t.id t_id,t.name t_name
+        from t_tag t
+        left join t_article_tag a_t
+        on a_t.tag_id = t.id
+        group by t.id,t.name
+        order by t.name asc
+    </select>
+    <update id="updateByTag" parameterType="cn.crybird.manage.model.Tag">
+        update t_tag
+        <set>
+            <if test="tag.name != null">
+                name = #{tag.name,jdbcType=VARCHAR},
+            </if>
+            update_count = update_count + 1
+        </set>
+        where id = #{tag.id,jdbcType=BIGINT}
+    </update>
+    <insert id="createByTag" parameterType="cn.crybird.manage.model.Tag" useGeneratedKeys="true"  keyProperty="id" keyColumn="id">
+        insert into t_tag(user_id,name)
+        values(#{tag.userId,jdbcType=BIGINT},#{tag.name,jdbcType=VARCHAR})
+    </insert>
+    <delete id="removeById" parameterType="java.lang.Long">
+        delete from t_tag
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+</mapper>

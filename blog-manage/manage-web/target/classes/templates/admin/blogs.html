@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="/css/me.css">
+</head>
+<body>
+<!--导航-->
+<div th:include="_fragment :: admin_nav(2)"></div>
+
+<div id="m-options" class="ui attached pointing menu">
+    <div class="ui container">
+        <div class="right menu">
+            <a href="#" th:href="@{/admin/blogs/add}" class="item">发布</a>
+            <a href="#" th:href="'javascript:;'" class="teal active item">列表</a>
+        </div>
+    </div>
+</div>
+<div class="center aligned">
+    <!--中间内容-->
+    <div id="main-content" class="m-container-small m-padded-tb-big">
+        <div class="ui container">
+            <div class="ui message" th:classappend="${success} ? success : error" th:unless="${#strings.isEmpty(msg)}">
+                <i class="close icon"></i>
+                <div class="header">提示：</div>
+                <p th:text="${msg}"></p>
+            </div>
+            <form action="#" th:action="@{/admin/blogs}" method="post" class="ui segment form">
+                <div class="inline fields">
+                    <div class="field">
+                        <input type="text" name="title" placeholder="标题">
+                    </div>
+                    <div class="field">
+                        <div class="ui selection dropdown">
+                            <input type="hidden" name="typeId">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">分类</div>
+                            <div class="menu">
+                                <div class="item" th:each="type,typeState : ${types}" th:data-value="${type.id}"
+                                     th:text="${type.name}">错误日志
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="hidden" name="recommendFlag" value="0">
+                            <input type="checkbox" onchange="change_flag(this,'recommendFlag')" id="recommend">
+                            <label for="recommend">推荐</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <button class="ui mini teal submit basic button"><i class="search icon"></i>搜索</button>
+                    </div>
+                </div>
+            </form>
+
+            <table th:fragment="list" class="ui celled table" th:object="${result.data}">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>标题</th>
+                    <th>类型</th>
+                    <th>推荐</th>
+                    <th>更新时间</th>
+                    <th>文章状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="article,articleState : *{list}">
+                    <td th:text="${articleState.count}">1</td>
+                    <td th:text="${article.title}">刻意练习清单</td>
+                    <td th:text="${article.type}">认知升级</td>
+                    <td th:text="${article.recommendFlag == 1 ? '是' : '否'}">是</td>
+                    <td th:text="${#dates.format(article.editedTime,'yyyy-MM-dd hh:mm:ss')}">2017-10-02 09:45</td>
+                    <td th:text="${article.status == 1 ? '已发布' : '未发布'}">已发布</td>
+                    <td>
+                        <a href="#" th:href="@{/admin/blogs/edit(id=${article.id})}"
+                           class="ui mini teal basic button">编辑</a>
+                        <a href="#" th:href="@{/admin/blogs/remove(id=${article.id})}"
+                           class="ui mini red basic button">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th colspan="7">
+                        <div class="ui mini pagination menu">
+                            <a th:href="*{hasPreviousPage} ? @{/admin/blogs(page=*{pageNum-1})} : 'javascript:;'"
+                               class="item" th:classappend="*{hasPreviousPage ? '' : 'disabled'}">上一页</a>
+                            <a th:href="*{hasNextPage} ? @{/admin/blogs(page=*{pageNum+1})} : 'javascript:;'"
+                               class="item"
+                               th:classappend="*{hasNextPage ? '' : 'disabled'}">下一页</a>
+                        </div>
+                        <a href="#" th:href="@{/admin/blogs/add}" class="ui mini right floated teal basic button">新增</a>
+                    </th>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+<script>
+    $('.menu.toggle').click(function () {
+        $('.m-item').toggleClass('m-mobile-hide');
+    });
+
+    $('.ui.dropdown').dropdown({
+        on: 'hover'
+    });
+
+    $(".message .close")
+        .on('click', function () {
+            $(this)
+                .closest('.message')
+                .transition('fade');
+        });
+
+    function change_flag(el, name) {
+        $("input[name=" + name + "]").val($(el).prop("checked") ? 1 : null);
+    }
+
+    console.log('[[${result}]]')
+</script>
+</body>
+</html>

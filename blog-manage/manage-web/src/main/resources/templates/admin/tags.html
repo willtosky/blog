@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="/css/me.css">
+</head>
+<body>
+
+<!--导航-->
+<div th:include="_fragment :: admin_nav(4)"></div>
+<div class="center aligned">
+    <!--中间内容-->
+    <div id="main-content" class="m-container-small m-padded-tb-big">
+        <div class="ui container">
+            <div class="ui message" th:classappend="${success} ? success : error" th:unless="${#strings.isEmpty(msg)}">
+                <i class="close icon"></i>
+                <div class="header">提示：</div>
+                <p th:text="${msg}"></p>
+            </div>
+            <form id="tag-search" action="#" th:action="@{/admin/tags}" method="get" class="ui segment form">
+                <div class="inline fields">
+                    <div class="field">
+                        <input type="text" name="name" placeholder="标签">
+                    </div>
+                    <div class="field">
+                        <button class="ui mini submit teal basic button"><i class="search icon"></i>搜索</button>
+                    </div>
+                </div>
+            </form>
+            <table class="ui celled table" th:object="${result.data}">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>名称</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tag,tagState : *{list}">
+                    <td th:text="${tagState.count}"></td>
+                    <td th:text="${tag.name}"></td>
+                    <td>
+                        <a href="#" th:href="@{/admin/tags/edit(id=${tag.id})}" class="ui mini teal basic button">编辑</a>
+                        <a href="#" th:href="@{/admin/tags/remove(id=${tag.id})}"
+                           class="ui mini red basic button">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th colspan="6">
+                        <div class="ui mini pagination menu">
+                            <a th:href="*{hasPreviousPage} ? @{/admin/tags(page=*{pageNum-1})} : 'javascript:;'"
+                               class="item" th:classappend="*{hasPreviousPage ? '' : 'disabled'}">上一页</a>
+                            <a th:href="*{hasNextPage} ? @{/admin/tags(page=*{pageNum+1})} : 'javascript:;'"
+                               class="item" th:classappend="*{hasNextPage ? '' : 'disabled'}">下一页</a>
+                        </div>
+                        <a href="#" th:href="@{/admin/tags/add}" class="ui mini right floated teal basic button">新增</a>
+                    </th>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+<script>
+    $('.menu.toggle').click(function () {
+        $('.m-item').toggleClass('m-mobile-hide');
+    });
+
+    $('.ui.dropdown').dropdown({
+        on: 'hover'
+    });
+
+    $(".message .close")
+        .on('click', function () {
+            $(this)
+                .closest('.message')
+                .transition('fade');
+        });
+
+    console.log('[[${result}]]')
+</script>
+</body>
+</html>
